@@ -102,12 +102,30 @@ class Tweet {
         return "unknown";
     }
 
+    
     get distance():number {
-        if(this.source != 'completed_event') {
+        if (this.source !== 'completed_event') {
             return 0;
         }
-        //TODO: prase the distance from the text of the tweet
-        return 0;
+
+        // Extract numerical distance and unit
+        const match = this.text.match(
+            /\b(\d+(?:\.\d+)?)\s*(km|mi)\b/i
+        );
+
+        if (!match) {
+            return 0;
+        }
+
+        const value = parseFloat(match[1]);
+        const unit = match[2].toLowerCase();
+
+        // Convert kilometers to miles
+        if (unit === 'km') {
+            return value / 1.609;
+        }
+
+        return value;
     }
 
     getHTMLTableRow(rowNumber:number):string {
