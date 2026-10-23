@@ -57,6 +57,8 @@ function parseTweets(runkeeper_tweets) {
         );
     });
 
+	
+
     // Prepare data for the activity frequency chart
     const activityData = sortedActivities.map(([activity, count]) => {
         return {
@@ -103,7 +105,6 @@ function parseTweets(runkeeper_tweets) {
 
 	//TODO: create the visualizations which group the three most-tweeted activities by the day of the week.
 	//Use those visualizations to answer the questions about which activities tended to be longest and when.
-
     // Prepare distance data for the top three activities
     const topNames = topThree.map(([name]) => name);
 
