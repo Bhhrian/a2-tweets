@@ -69,12 +69,37 @@ class Tweet {
         return text.trim();
     }
 
+
     get activityType():string {
-        if (this.source != 'completed_event') {
+        if (this.source !== 'completed_event') {
             return "unknown";
         }
-        //TODO: parse the activity type from the text of the tweet
-        return "";
+
+        // Example: "Just completed a 4.87 km run"
+        const distanceMatch = this.text.match(
+            /\b\d+(?:\.\d+)?\s*(?:km|mi)\s+([a-zA-Z]+(?:\s+[a-zA-Z]+)?)\b/i
+        );
+
+        if (distanceMatch) {
+            let activity = distanceMatch[1].toLowerCase();
+
+            // Remove automatic trailing words
+            activity = activity.replace(/\s+with$/, "");
+            activity = activity.replace(/\s+in$/, "");
+
+            return activity.trim();
+        }
+
+        // Handle activities expressed using duration
+        const durationMatch = this.text.match(
+            /Just (?:completed|posted) (?:a|an) (.+?)\s+in\s+\d/i
+        );
+
+        if (durationMatch) {
+            return durationMatch[1].toLowerCase().trim();
+        }
+
+        return "unknown";
     }
 
     get distance():number {
