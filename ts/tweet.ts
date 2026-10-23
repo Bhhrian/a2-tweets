@@ -130,6 +130,39 @@ class Tweet {
 
     getHTMLTableRow(rowNumber:number):string {
         //TODO: return a table row which summarizes the tweet with a clickable link to the RunKeeper activity
-        return "<tr></tr>";
+        // Escape text before inserting into HTML
+        const escapeHTML = (value:string):string => {
+            return value
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        };
+
+        // Identify the URL in the tweet
+        const urlMatch = this.text.match(/https?:\/\/[^\s]+/i);
+
+        // Remove URL and Runkeeper hashtag from displayed text
+        let displayText = this.text
+            .replace(/https?:\/\/[^\s]+/gi, "")
+            .replace(/#Runkeeper\b/gi, "")
+            .trim();
+
+        let tweetHTML = escapeHTML(displayText);
+
+        // Make the tweet URL clickable
+        if (urlMatch) {
+            const url = urlMatch[0];
+            tweetHTML += ' <a href="' + escapeHTML(url) +
+                '" target="_blank" rel="noopener noreferrer">' +
+                'View Activity</a>';
+        }
+
+        return '<tr>' +
+            '<td>' + rowNumber + '</td>' +
+            '<td>' + escapeHTML(this.activityType) + '</td>' +
+            '<td>' + tweetHTML + '</td>' +
+            '</tr>';
     }
 }
