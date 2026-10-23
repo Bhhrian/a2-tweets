@@ -10,6 +10,26 @@ function parseTweets(runkeeper_tweets) {
 	});
 
 	//TODO: create a new array or manipulate tweet_array to create a graph of the number of tweets containing each type of activity.
+	// Calculate average distance for each top activity
+    topThree.forEach(([activity, count]) => {
+        const distances = completedTweets
+            .filter(tweet =>
+                tweet.activityType === activity &&
+                tweet.distance > 0
+            )
+            .map(tweet => tweet.distance);
+
+        const average = distances.length > 0
+            ? distances.reduce((sum, d) => sum + d, 0) /
+              distances.length
+            : 0;
+
+        console.log(
+            activity,
+            "Count:", count,
+            "Average distance:", average.toFixed(2), "miles"
+        );
+    });
 
 	activity_vis_spec = {
 	  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
