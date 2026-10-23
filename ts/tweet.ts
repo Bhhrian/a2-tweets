@@ -33,15 +33,40 @@ class Tweet {
     //returns a boolean, whether the text includes any content written by the person tweeting.
     get written():boolean {
         //TODO: identify whether the tweet is written
-        return false;
+        return this.writtenText.length > 0;
     }
 
     get writtenText():string {
-        if(!this.written) {
+        //TODO: parse the written text from the tweet
+        let text = this.text
+            .replace(/https?:\/\/\S+/gi, "")
+            .replace(/#Runkeeper/gi, "")
+            .trim();
+
+        // Remove default Runkeeper messages
+        text = text
+            .replace(/with @Runkeeper\.?\s*Check it out!/gi, "")
+            .replace(/with @Runkeeper\.?/gi, "")
+            .replace(/Check it out!/gi, "")
+            .trim();
+
+        // Remove standard completed activity prefix
+        text = text.replace(
+            /^Just (completed|posted) (a|an) .*?(?:run|walk|ride|workout|cycling|hike|swim|activity)\s*-\s*/i,
+            ""
+        );
+
+        // Ignore remaining automatic activity descriptions
+        if (/^Just (completed|posted)\b/i.test(text)) {
             return "";
         }
-        //TODO: parse the written text from the tweet
-        return "";
+
+        // Ignore automatic live event messages
+        if (/^Watch my .* right now/i.test(text)) {
+            return "";
+        }
+
+        return text.trim();
     }
 
     get activityType():string {
