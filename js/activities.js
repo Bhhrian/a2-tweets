@@ -195,8 +195,9 @@ function parseTweets(runkeeper_tweets) {
             "values": distanceData
         },
         "mark": {
-            "type": "line",
-            "point": true
+            "type": "point",
+			"filled": true,
+			"size": 100
         },
         "encoding": {
             "x": dayEncoding,

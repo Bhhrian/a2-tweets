@@ -17,20 +17,11 @@ of user-written tweets (+1 extra credit point requested).
 
 3. What online resources did you consult when completing this assignment? (list sites like StackOverflow or specific URLs for tutorials; describe queries to Generative AI or use of AI-based code completion)
 
-I used ChatGPT (OpenAI) to help understand the assignment
-requirements, develop and debug JavaScript and TypeScript code,
-work with regular expressions, and create Vega-Lite visualizations.
+I used ChatGPT (OpenAI) as a learning and development assistant throughout this assignment. I consulted it to better understand the assignment requirements, explore implementation approaches, troubleshoot JavaScript and TypeScript issues, and review code related to tweet classification, regular expressions, data processing, and Vega-Lite visualizations.
 
-Specifically, I consulted ChatGPT for assistance with:
-- Classifying RunKeeper tweets into different categories.
-- Identifying and extracting user-written text.
-- Extracting activity types and converting distances to miles.
-- Calculating activity frequencies and average distances.
-- Creating Vega-Lite charts and implementing chart toggling.
-- Building a real-time tweet search interface.
-- Generating HTML table rows with clickable activity links.
-- Implementing a dictionary-based sentiment analysis feature.
-- Debugging JavaScript errors and compiling TypeScript.
+I also used ChatGPT for assistance with implementing tweet search functionality, HTML table generation, chart interactions, and the optional sentiment analysis feature.
+
+I reviewed, integrated, modified, and tested the suggested code in my local development environment to ensure that the application worked as intended.
 
 I integrated and tested the suggested code in my local
 development environment.
@@ -42,7 +33,10 @@ Relevant resources:
 
 4. What classmates or other individuals did you consult as part of this assignment? What did you discuss?
 
-None. I did not consult any classmates or other individuals.
+collaborated with Daniel Ho Kim to compare our data \
+visualizations and discuss differences in graph presentation. After comparing our graphs, I independently adjusted the styling of my graphs to improve their readability and visual clarity.
+All code changes were made independently.
+
 I used ChatGPT as described in Question 3.
 
 5. Is there anything special we need to know in order to run your code?
