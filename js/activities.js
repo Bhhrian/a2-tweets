@@ -1,15 +1,15 @@
 function parseTweets(runkeeper_tweets) {
-	//Do not proceed if no tweets loaded
-	if(runkeeper_tweets === undefined) {
-		window.alert('No tweets returned');
-		return;
-	}
-	
-	tweet_array = runkeeper_tweets.map(function(tweet) {
-		return new Tweet(tweet.text, tweet.created_at);
-	});
+    // Do not proceed if no tweets loaded
+    if (runkeeper_tweets === undefined) {
+        window.alert('No tweets returned');
+        return;
+    }
 
-	//TODO: create a new array or manipulate tweet_array to create a graph of the number of tweets containing each type of activity.
+    // Convert raw tweets into Tweet objects
+    const tweet_array = runkeeper_tweets.map(function(tweet) {
+        return new Tweet(tweet.text, tweet.created_at);
+    });
+
     // Get completed event tweets
     const completedTweets = tweet_array.filter(
         tweet => tweet.source === 'completed_event'
@@ -36,7 +36,7 @@ function parseTweets(runkeeper_tweets) {
 
     console.log("Top 3 Activities:", topThree);
 
-	// Calculate average distance for each top activity
+    // Calculate average distance for each top activity
     topThree.forEach(([activity, count]) => {
         const distances = completedTweets
             .filter(tweet =>
@@ -57,8 +57,6 @@ function parseTweets(runkeeper_tweets) {
         );
     });
 
-	
-
     // Prepare data for the activity frequency chart
     const activityData = sortedActivities.map(([activity, count]) => {
         return {
@@ -67,50 +65,56 @@ function parseTweets(runkeeper_tweets) {
         };
     });
 
-	activity_vis_spec = {
-	  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-	  "description": "A graph of the number of Tweets containing each type of activity.",
-	  "data": {
-	    "values": activityData
-	  },
-	  //TODO: Add mark and encoding
-		"mark": "bar",
-		"encoding": {
-			"x": {
-				"field": "activity",
-				"type": "nominal",
-				"sort": "-y",
-				"title": "Activity Type"
-			},
-			"y": {
-				"field": "count",
-				"type": "quantitative",
-				"title": "Number of Tweets"
-			},
-			"tooltip": [
-				{
-					"field": "activity",
-					"type": "nominal"
-				},
-				{
-					"field": "count",
-					"type": "quantitative"
-				}
-			]
-		},
-		"width": 650,
-		"height": 350
-	};
-	vegaEmbed('#activityVis', activity_vis_spec, {actions:false});
+    // Activity frequency bar chart
+    const activity_vis_spec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+        "description": "Number of tweets containing each activity type.",
+        "data": {
+            "values": activityData
+        },
+        "mark": "bar",
+        "encoding": {
+            "x": {
+                "field": "activity",
+                "type": "nominal",
+                "sort": "-y",
+                "title": "Activity Type"
+            },
+            "y": {
+                "field": "count",
+                "type": "quantitative",
+                "title": "Number of Tweets"
+            },
+            "tooltip": [
+                {
+                    "field": "activity",
+                    "type": "nominal"
+                },
+                {
+                    "field": "count",
+                    "type": "quantitative"
+                }
+            ]
+        },
+        "width": 650,
+        "height": 350
+    };
 
-	//TODO: create the visualizations which group the three most-tweeted activities by the day of the week.
-	//Use those visualizations to answer the questions about which activities tended to be longest and when.
+    vegaEmbed('#activityVis', activity_vis_spec, {
+        actions: false
+    });
+
     // Prepare distance data for the top three activities
     const topNames = topThree.map(([name]) => name);
 
     const days = [
-        "Sunday", "Monday", "Tuesday", "Wednesday",
-        "Thursday", "Friday", "Saturday"
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
     ];
 
     const distanceData = completedTweets
@@ -135,13 +139,19 @@ function parseTweets(runkeeper_tweets) {
     const colorEncoding = {
         field: "activity",
         type: "nominal",
-        title: "Activity Type"
+        title: "Activity Type",
+        legend: {
+            title: "Activity Type"
+        }
     };
 
-    // Plot 1: Individual distances
+    // Chart 1: Individual activity distances
     const distanceSpec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-        "data": { "values": distanceData },
+        "description": "Individual activity distances by day.",
+        "data": {
+            "values": distanceData
+        },
         "mark": {
             "type": "point",
             "opacity": 0.3
@@ -153,16 +163,37 @@ function parseTweets(runkeeper_tweets) {
                 "type": "quantitative",
                 "title": "Distance (miles)"
             },
-            "color": colorEncoding
+            "color": colorEncoding,
+            "tooltip": [
+                {
+                    "field": "activity",
+                    "type": "nominal",
+                    "title": "Activity"
+                },
+                {
+                    "field": "day",
+                    "type": "ordinal",
+                    "title": "Day"
+                },
+                {
+                    "field": "distance",
+                    "type": "quantitative",
+                    "title": "Distance (miles)",
+                    "format": ".2f"
+                }
+            ]
         },
         "width": 650,
         "height": 350
     };
 
-    // Plot 2: Mean distance by day and activity
+    // Chart 2: Mean distance by day and activity
     const meanSpec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-        "data": { "values": distanceData },
+        "description": "Mean activity distances by day.",
+        "data": {
+            "values": distanceData
+        },
         "mark": {
             "type": "line",
             "point": true
@@ -175,13 +206,32 @@ function parseTweets(runkeeper_tweets) {
                 "type": "quantitative",
                 "title": "Mean Distance (miles)"
             },
-            "color": colorEncoding
+            "color": colorEncoding,
+            "tooltip": [
+                {
+                    "field": "activity",
+                    "type": "nominal",
+                    "title": "Activity"
+                },
+                {
+                    "field": "day",
+                    "type": "ordinal",
+                    "title": "Day"
+                },
+                {
+                    "aggregate": "mean",
+                    "field": "distance",
+                    "type": "quantitative",
+                    "title": "Mean Distance (miles)",
+                    "format": ".2f"
+                }
+            ]
         },
         "width": 650,
         "height": 350
     };
 
-    // Render both charts
+    // Render both distance charts
     vegaEmbed('#distanceVis', distanceSpec, {
         actions: false
     });
@@ -190,16 +240,18 @@ function parseTweets(runkeeper_tweets) {
         actions: false
     });
 
-    // Initially show individual distances
+    // Get chart containers and toggle button
     const individualChart = document.getElementById('distanceVis');
     const meanChart = document.getElementById('distanceVisAggregated');
     const aggregateButton = document.getElementById('aggregate');
 
+    // Initially display individual distances
+    individualChart.style.display = 'block';
     meanChart.style.display = 'none';
 
-    // Toggle between individual and mean distance charts
     let showingMeans = false;
 
+    // Toggle between individual and mean distance charts
     aggregateButton.addEventListener('click', function() {
         showingMeans = !showingMeans;
 
@@ -210,11 +262,11 @@ function parseTweets(runkeeper_tweets) {
             showingMeans ? 'block' : 'none';
 
         aggregateButton.innerText =
-            showingMeans ? 'Show individual distances' : 'Show means';
+            showingMeans ? 'Show all activities' : 'Show means';
     });
 }
 
-//Wait for the DOM to load
-document.addEventListener('DOMContentLoaded', function (event) {
-	loadSavedRunkeeperTweets().then(parseTweets);
+// Wait for the DOM to load
+document.addEventListener('DOMContentLoaded', function(event) {
+    loadSavedRunkeeperTweets().then(parseTweets);
 });
