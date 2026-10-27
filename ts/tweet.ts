@@ -1,13 +1,13 @@
 class Tweet {
-	private text:string;
-	time:Date;
+    private text:string;
+    time:Date;
 
-	constructor(tweet_text:string, tweet_time:string) {
+    constructor(tweet_text:string, tweet_time:string) {
         this.text = tweet_text;
-		this.time = new Date(tweet_time);//, "ddd MMM D HH:mm:ss Z YYYY"
-	}
+        this.time = new Date(tweet_time);//, "ddd MMM D HH:mm:ss Z YYYY"
+    }
 
-	//returns either 'live_event', 'achievement', 'completed_event', or 'miscellaneous'
+    //returns either 'live_event', 'achievement', 'completed_event', or 'miscellaneous'
     get source():string {
         const text = this.text.toLowerCase();
 
@@ -56,8 +56,14 @@ class Tweet {
             ""
         );
 
-        // Ignore remaining automatic activity descriptions
+        // Extract user-written comments after the activity description
         if (/^Just (completed|posted)\b/i.test(text)) {
+            const separatorIndex = text.indexOf(" - ");
+
+            if (separatorIndex !== -1) {
+                return text.substring(separatorIndex + 3).trim();
+            }
+
             return "";
         }
 
@@ -68,7 +74,6 @@ class Tweet {
 
         return text.trim();
     }
-
 
     get activityType():string {
         if (this.source !== 'completed_event') {
@@ -102,7 +107,6 @@ class Tweet {
         return "unknown";
     }
 
-    
     get distance():number {
         if (this.source !== 'completed_event') {
             return 0;
@@ -128,8 +132,54 @@ class Tweet {
         return value;
     }
 
+    // BONUS: Analyze sentiment of user-written tweet text
+    get sentiment():string {
+        const positiveWords = [
+            "good", "great", "awesome", "amazing", "excellent",
+            "happy", "love", "loved", "enjoy", "enjoyed",
+            "beautiful", "wonderful", "fantastic", "best",
+            "fun", "nice", "perfect", "proud", "strong",
+            "refreshing", "glorious", "brilliant"
+        ];
+
+        const negativeWords = [
+            "bad", "awful", "terrible", "horrible", "worst",
+            "hate", "hated", "sad", "pain", "painful",
+            "tired", "exhausted", "difficult", "hard",
+            "struggle", "struggling", "sore", "injured",
+            "disappointed", "frustrated", "miserable"
+        ];
+
+        const words = this.writtenText
+            .toLowerCase()
+            .match(/[a-z]+/g) || [];
+
+        let score = 0;
+
+        words.forEach(word => {
+            if (positiveWords.includes(word)) {
+                score++;
+            }
+
+            if (negativeWords.includes(word)) {
+                score--;
+            }
+        });
+
+        if (score > 0) {
+            return "Positive";
+        }
+
+        if (score < 0) {
+            return "Negative";
+        }
+
+        return "Neutral";
+    }
+
     getHTMLTableRow(rowNumber:number):string {
         //TODO: return a table row which summarizes the tweet with a clickable link to the RunKeeper activity
+
         // Escape text before inserting into HTML
         const escapeHTML = (value:string):string => {
             return value
@@ -160,9 +210,10 @@ class Tweet {
         }
 
         return '<tr>' +
-            '<td>' + rowNumber + '</td>' +
-            '<td>' + escapeHTML(this.activityType) + '</td>' +
-            '<td>' + tweetHTML + '</td>' +
-            '</tr>';
+        '<td>' + rowNumber + '</td>' +
+        '<td>' + escapeHTML(this.activityType) + '</td>' +
+        '<td>' + tweetHTML + '</td>' +
+        '<td>' + escapeHTML(this.sentiment) + '</td>' +
+        '</tr>';
     }
 }

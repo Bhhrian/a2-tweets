@@ -22,7 +22,7 @@ function parseTweets(runkeeper_tweets) {
     updateSearchResults();
 }
 
-function addEventHandlerForSearch() {
+function updateSearchResults() {
 	//TODO: Search the written tweets as text is entered into the search box, and add them to the table
 	const searchInput = document.getElementById('textFilter');
     const searchText = searchInput.value.trim().toLowerCase();
